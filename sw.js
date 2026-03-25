@@ -1,4 +1,4 @@
-const CACHE_NAME = 'p3-fast-v12'; // 更新 index.html 后把 v10 改成 v11
+const CACHE_NAME = 'p3-fast-v13'; // 更新 index.html 后把 v10 改成 v11
 const ASSETS = [
   './',
   './index.html',
