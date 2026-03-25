@@ -18,13 +18,30 @@
         :root { --bg: #ffffff; --card: #e5e5ea; --red: #ff3b30; --orange: #ff9500; --btn-gray: #f2f2f7; }
         * { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
-        /* 核心修改：整体下移 15px 并适配安全区域，初始隐藏 body 配合密码逻辑 */
+        /* 页面初始显示，但内容被遮罩层挡住 */
         body { 
-            display: none;
             font-family: -apple-system, sans-serif; background: var(--bg); color: #000; 
             padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px; 
             margin: 0; transition: background 0.4s; overflow-x: hidden; touch-action: pan-y; 
         }
+
+        /* --- 新增：网页内全屏密码遮罩 --- */
+        #pwdOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        #pwdOverlay h2 { font-size: 18px; margin-bottom: 20px; color: #000; }
+        #pwdOverlay input { 
+            width: 80%; max-width: 300px; padding: 15px; border: 1px solid #ddd; 
+            border-radius: 15px; font-size: 20px; text-align: center; background: #f9f9f9;
+            margin-bottom: 20px; outline: none; -webkit-user-select: text; user-select: text;
+        }
+        #pwdOverlay button {
+            width: 80%; max-width: 300px; padding: 15px; background: #000; color: #fff;
+            border: none; border-radius: 15px; font-weight: 700; font-size: 16px;
+        }
+        /* --------------------------- */
         
         .h { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; }
         h2 { margin: 0; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.3px; line-height: 1.1; }
@@ -32,22 +49,10 @@
         .reg-btn { background: #000; color: #fff; font-size: 11px; border: none; padding: 0 14px; border-radius: 9px; font-weight: 700; text-transform: uppercase; height: 25px; display: flex; align-items: center; }
         
         .pianos { display: flex; gap: 5px; margin-bottom: 25px; padding: 12px 0 8px 0; overflow: visible; }
-        
-        .p-btn { 
-            flex: 1; background: var(--btn-gray); 
-            color: #8e8e93; border: none; padding: 10px 0; 
-            border-radius: 12px; font-weight: 700; font-size: 10px; 
-            transition: 0.2s; position: relative; white-space: nowrap; overflow: visible; 
-        }
+        .p-btn { flex: 1; background: var(--btn-gray); color: #8e8e93; border: none; padding: 10px 0; border-radius: 12px; font-weight: 700; font-size: 10px; transition: 0.2s; position: relative; white-space: nowrap; overflow: visible; }
         .p-btn.active { color: #fff !important; }
         
-        .p-badge { 
-            position: absolute; top: -5px; right: -5px; 
-            background: var(--red); width: 15px; height: 15px; 
-            border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-            z-index: 10; animation: badgePulse 1.5s infinite; 
-            border: 2px solid white;
-        }
+        .p-badge { position: absolute; top: -5px; right: -5px; background: var(--red); width: 15px; height: 15px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; animation: badgePulse 1.5s infinite; border: 2px solid white; }
         @keyframes badgePulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         #g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s; }
@@ -56,7 +61,6 @@
         
         .btn-wrap { position: relative; width: 100%; aspect-ratio: 1/1; }
         .btn-machine { width: 100%; height: 100%; border: none; border-radius: 24px; font-weight: 800; font-size: 17px; background: var(--btn-gray); transition: background 0.3s; }
-        
         .badge { position: absolute; top: -4px; right: -4px; width: 22px; height: 22px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
         .or { background: var(--red) !important; color: #fff !important; animation: pulseRed 1.5s infinite; box-shadow: 0 0 15px rgba(255,59,48,0.4) !important; }
@@ -76,26 +80,12 @@
         .modal-content input { width: 90%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 18px; text-align: center; background: #f9f9f9; outline: none; }
         .modal-btn { background: #000; color: #fff; padding: 15px; border-radius: 15px; font-weight: 700; width: 100%; font-size: 16px; border: none; }
         
-        /* 核心修改：Registro 页面同样下移 15px */
         #v { background: #fff; display: none; flex-direction: column; z-index: 300; position: fixed; top: 0; left: 0; width: 100%; height: 100%; padding-top: calc(15px + env(safe-area-inset-top)); }
-        
-        .v-nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            height: 55px; 
-            padding: 8px 20px 0 20px; 
-            flex-shrink: 0; 
-            background: #fff; 
-            border-bottom: 1px solid #f2f2f7; 
-            z-index: 200; 
-        }
+        .v-nav { display: flex; align-items: center; justify-content: space-between; height: 55px; padding: 8px 20px 0 20px; flex-shrink: 0; background: #fff; border-bottom: 1px solid #f2f2f7; z-index: 200; }
         .back-arrow { font-size: 28px; width: 45px; cursor: pointer; display: flex; align-items: center; height: 100%; }
         .v-h2 { font-size: 18px; font-weight: 900; text-transform: uppercase; position: absolute; left: 0; right: 0; text-align: center; margin: 0; pointer-events: none; }
         .v-user-tag { font-size: 12px; color: #8e8e93; font-weight: 600; width: 80px; text-align: right; }
-        
         #logContainer { flex: 1; overflow-y: auto; padding: 3px 15px 15px 15px; -webkit-overflow-scrolling: touch; }
-
         .day-header { background: var(--btn-gray); padding: 14px 15px; font-size: 14px; font-weight: 800; color: #000; display: flex; align-items: center; position: sticky; top: 0; z-index: 150; border-radius: 12px; margin-bottom: 15px; min-height: 48px; }
         .day-del-btn { color: var(--red); font-weight: 900; font-size: 20px; margin-right: 12px; width: 20px; display: none; align-items: center; justify-content: center; line-height: 1; cursor: pointer; }
         .day-section.collapsed .day-del-btn { display: flex; }
@@ -103,16 +93,13 @@
         .day-header::after { content: '▼'; font-size: 10px; color: #8e8e93; margin-left: auto; }
         .day-section.collapsed .day-header::after { content: '▶'; }
         .day-section.collapsed .day-content { display: none; }
-
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
         th, td { padding: 12px 2px; text-align: center; font-size: 14px; border-bottom: 1px solid #f2f2f7; vertical-align: middle; }
         th { color: #8e8e93; font-size: 9px; text-transform: uppercase; background: #fff; position: sticky; top: 48px; z-index: 140; letter-spacing: -0.2px; }
-
         .col-time { text-align: left !important; padding-left: 8px !important; width: 85px; }
         .time-cell { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; line-height: 1.1; font-size: 13.5px; font-weight: 800; padding: 2px 0; height: 100%; }
         .t-a { color: var(--orange); }
         .t-d { color: var(--red); }
-        
         .v-footer { flex-shrink: 0; background: #fff; padding: 15px; border-top: 1px solid #f2f2f7; z-index: 250; }
         .btn-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
         .bottom-action-btn { border: none; padding: 10px 0; border-radius: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; flex: 1; max-width: 140px; cursor: pointer; }
@@ -120,13 +107,18 @@
         .clear-btn { background: var(--btn-gray); color: var(--red); border: 1px solid #ddd; }
         .v-edit-hint { font-size: 9px; color: #8e8e93; text-align: center; margin-bottom: 10px; font-weight: 600; }
         .copy-text { text-align: center; font-size: 11px; color: #000000; margin-top: 5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-
         .undo-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--btn-gray); border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; border: 1px solid #ddd; }
         .del-row { color: var(--red); font-weight: 900; font-size: 20px; text-align: center; width: 30px; cursor: pointer; }
         .editable-causale { color: #000; display: block; min-height: 24px; padding: 8px 0; word-wrap: break-word; white-space: normal; line-height: 1.3; font-size: 12px; }
     </style>
 </head>
 <body class="p1">
+    <div id="pwdOverlay">
+        <h2>Inserire Password</h2>
+        <input type="password" id="pwdInput" placeholder="****" autofocus>
+        <button onclick="verifyPwd()">ACCEDI</button>
+    </div>
+
     <div class="h">
         <div class="title-group"><h2>OPERATORE</h2><div id="userNameDisp" class="user-subtitle" onclick="handleNameClick()">Hu_Shan</div></div>
         <button class="reg-btn" onclick="showMemoria()">registro</button>
@@ -154,9 +146,7 @@
             <h2 class="v-h2">REGISTRO INTERVENTI</h2>
             <div id="regNameDisp" class="v-user-tag">Hu_Shan</div>
         </div>
-        
         <div id="logContainer"></div>
-        
         <div class="v-footer">
             <div class="btn-group">
                 <button class="bottom-action-btn clear-btn" onclick="openConfirm()">Svuota tutto</button>
@@ -168,19 +158,21 @@
     </div>
 
 <script>
-    // --- 密码保护逻辑 ---
-    const PASSWORD = "hs1234";
-    function checkPassword() {
-        let userPass = prompt("Inserire la password per accedere:");
-        if (userPass === PASSWORD) {
-            document.body.style.display = "block";
+    // --- 修复：网页内验证逻辑 ---
+    function verifyPwd() {
+        const input = document.getElementById('pwdInput').value;
+        if (input === "hs1234") {
+            document.getElementById('pwdOverlay').style.display = 'none';
             initApp();
         } else {
             alert("Password errata!");
-            window.location.reload();
+            document.getElementById('pwdInput').value = "";
         }
     }
-    window.onload = checkPassword;
+    // 回车键支持
+    document.getElementById('pwdInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') verifyPwd();
+    });
 
     const pianoData = { 
         1: ['101','101bis','102','102bis','103','103bis','104','104bis','105','105bis','106','106bis','107','107bis','108','108bis'], 
@@ -225,15 +217,12 @@
         if (logs.length === 0) { alert("Nessun dato da inviare."); return; }
         const expandedDays = Array.from(document.querySelectorAll('.day-section:not(.collapsed) span')).map(el => el.innerText);
         if (expandedDays.length === 0) { alert("Espandere almeno un giorno nel registro per inviare i dati."); return; }
-
         const w = { linea: 12, inizio: 10, attesa: 10, durata: 10 };
         let shareText = `REGISTRO INTERVENTI - OPERATORE: ${currentUserName}\nESPORTATO IL: ${new Date().toLocaleString('it-IT')}\n------------------------------------------------------------\n`;
         const groups = {}; 
         dayHistory.forEach(d => groups[d] = []);
         logs.forEach(l => { if (groups[l.day]) groups[l.day].push(l); });
-        
         const sortedDays = Object.keys(groups).filter(day => expandedDays.includes(day)).sort((a,b) => b.split('/').reverse().join('').localeCompare(a.split('/').reverse().join('')));
-
         sortedDays.forEach(day => {
             shareText += `\n[ DATA: ${day} ]\n${"LINEA".padEnd(w.linea)}${"INIZIO".padEnd(w.inizio)}${"ATTESA".padEnd(w.attesa)}${"DURATA".padEnd(w.durata)}CAUSALE\n${"".padEnd(50, '-')}\n`;
             groups[day].sort((a,b) => b.st - a.st).forEach(l => {
@@ -241,7 +230,6 @@
                 shareText += `${displayId.toString().padEnd(w.linea)}${l.s.toString().padEnd(w.inizio)}${(l.tA+"m").padEnd(w.attesa)}${(l.tD+"m").padEnd(w.durata)}${l.c}\n`;
             });
         });
-
         if (navigator.share) {
             try { await navigator.share({ title: `Registro_${currentUserName}`, text: shareText }); } catch (err) {}
         } else {
@@ -305,21 +293,16 @@
     function renderLogs() {
         const container = document.getElementById('logContainer');
         const expandedDays = new Set();
-        container.querySelectorAll('.day-section:not(.collapsed) span').forEach(el => {
-            expandedDays.add(el.innerText.trim());
-        });
-
+        container.querySelectorAll('.day-section:not(.collapsed) span').forEach(el => expandedDays.add(el.innerText.trim()));
         container.innerHTML = '';
         const oggi = new Date().toLocaleDateString('it-IT');
         const groups = {}; 
         dayHistory.forEach(d => groups[d] = []);
         logs.forEach((l, idx) => { if (groups[l.day]) groups[l.day].push({ ...l, originalIndex: idx }); });
         const sortedDays = Object.keys(groups).sort((a,b) => b.split('/').reverse().join('').localeCompare(a.split('/').reverse().join('')));
-        
         sortedDays.forEach(day => {
             const section = document.createElement('div');
             const isCollapsed = expandedDays.size === 0 ? (day !== oggi) : !expandedDays.has(day);
-
             section.className = 'day-section' + (isCollapsed ? ' collapsed' : '');
             const dayLogs = groups[day].sort((a, b) => b.st - a.st);
             section.innerHTML = `
@@ -328,20 +311,11 @@
                 </div>
                 <div class="day-content">
                     <table>
-                        <thead><tr>
-                            <th>LINEA</th><th>INIZIO</th>
-                            <th class="col-time">ATTESA & DURATA</th>
-                            <th>CAUSALE</th><th><span class="undo-btn" onclick="performUndo(event)">↺</span></th>
-                        </tr></thead>
+                        <thead><tr><th>LINEA</th><th>INIZIO</th><th class="col-time">ATTESA & DURATA</th><th>CAUSALE</th><th><span class="undo-btn" onclick="performUndo(event)">↺</span></th></tr></thead>
                         <tbody>${dayLogs.map(l => `<tr>
                             <td><b>${l.i === 'FUORI' ? 'F. Linea' : l.i}</b></td>
                             <td>${l.s}</td>
-                            <td class="col-time">
-                                <div class="time-cell">
-                                    <span class="t-a">A: ${l.tA}m</span>
-                                    <span class="t-d">D: ${l.tD}m</span>
-                                </div>
-                            </td>
+                            <td class="col-time"><div class="time-cell"><span class="t-a">A: ${l.tA}m</span><span class="t-d">D: ${l.tD}m</span></div></td>
                             <td><span class="editable-causale" onclick="handleCausaleClick(${l.originalIndex})">${l.c}</span></td>
                             <td class="del-row" onclick="deleteRow(${l.originalIndex})">×</td>
                         </tr>`).join('')}</tbody>
@@ -370,7 +344,6 @@
         gd.className = (dir==='left' ? 'slide-left' : 'slide-right'); 
         setTimeout(() => { curPiano = p; document.body.className = 'p' + p; renderGrid(); applyTheme(); gd.className = ''; }, 150); 
     }
-
     function applyTheme() { 
         const c=themeConfig[curPiano]; 
         document.querySelectorAll('.p-btn').forEach((b,i)=>{ 
@@ -380,7 +353,6 @@
         document.getElementById('floorColor').value=c; 
         renderGrid(); 
     }
-    
     function updateThemeColor(c) { themeConfig[curPiano]=c; localStorage.setItem('pianoThemes',JSON.stringify(themeConfig)); applyTheme(); }
     function handleShortcut(event) { 
         const i = event.target; const v = i.value.toLowerCase(); 
@@ -403,7 +375,6 @@
     function toggleFuori() { handleMachineClick('FUORI'); }
     function doClear() { logs=[]; dayHistory=[]; saveState(); renderLogs(); document.getElementById('confirmModal').style.display='none'; }
     function openConfirm() { document.getElementById('confirmModal').style.display='flex'; }
-    
     document.addEventListener('touchstart', e=>{ touchStartX=e.changedTouches[0].screenX; });
     document.addEventListener('touchend', e=>{ 
         let d=e.changedTouches[0].screenX-touchStartX; 
@@ -412,7 +383,6 @@
             else if(d<0 && curPiano<5) switchPiano(curPiano+1,'left'); 
         } 
     });
-    initApp();
 </script>
 </body>
 </html>
