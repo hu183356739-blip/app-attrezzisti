@@ -1,4 +1,4 @@
-const CACHE_NAME = 'p3-fast-v6';
+const CACHE_NAME = 'p3-fast-v7';
 const ASSETS = [
   'index.html',
   'manifest.json',
