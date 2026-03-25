@@ -1,10 +1,10 @@
 {
-  "name": "P3 attrezzisti Registro",
-  "short_name": "attrezzisti P3",
+  "name": "EssilorLuxottica",
+  "short_name": "P3 Reg",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "icon.png",
